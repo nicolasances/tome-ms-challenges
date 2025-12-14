@@ -4,16 +4,18 @@ import { TomeChallenge } from "../TomeChallenge";
 export class JuiceChallenge extends TomeChallenge {
 
     public type: string = "juice";
-    public context: string;
     public topicId: string;
     public topicCode: string;
-
+    public sectionCode: string;
+    
+    public context: string;
     public toRemember: ToRemember[];
 
-    constructor({ topicId, topicCode, context, toRemember }: { topicId: string, topicCode: string, context: string, toRemember: ToRemember[] }) {
+    constructor({ topicId, topicCode, sectionCode, context, toRemember }: { topicId: string, topicCode: string, sectionCode: string, context: string, toRemember: ToRemember[] }) {
         super();
         this.topicId = topicId;
         this.topicCode = topicCode;
+        this.sectionCode = sectionCode;
         this.context = context;
         this.toRemember = toRemember;
     }
@@ -22,6 +24,7 @@ export class JuiceChallenge extends TomeChallenge {
         return new JuiceChallenge({
             topicId: doc.topicId,
             topicCode: doc.topicCode,
+            sectionCode: doc.sectionCode,
             context: doc.context,
             toRemember: doc.toRemember
         });
@@ -32,12 +35,14 @@ export class JuiceChallenge extends TomeChallenge {
         // Check mandatory fields
         if (!body.topicId) throw new ValidationError(400, 'The topicId is required');
         if (!body.topicCode) throw new ValidationError(400, 'The topicCode is required');
+        if (!body.sectionCode) throw new ValidationError(400, 'The sectionCode is required');
         if (!body.context) throw new ValidationError(400, 'The context is required');
         if (!body.toRemember || !Array.isArray(body.toRemember)) throw new ValidationError(400, 'The toRemember array is required');
 
         return new JuiceChallenge({
             topicId: body.topicId,
             topicCode: body.topicCode,
+            sectionCode: body.sectionCode,
             context: body.context,
             toRemember: body.toRemember
         });
@@ -48,6 +53,7 @@ export class JuiceChallenge extends TomeChallenge {
             type: this.type,
             topicId: this.topicId,
             topicCode: this.topicCode,
+            sectionCode: this.sectionCode,
             context: this.context,
             toRemember: this.toRemember
         };
