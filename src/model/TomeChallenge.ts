@@ -12,4 +12,3 @@ export abstract class TomeChallenge {
     public abstract toMongoDoc(): any;
 
 }
-

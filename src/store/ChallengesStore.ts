@@ -1,6 +1,7 @@
 import { Db } from "mongodb";
 import { ExecutionContext, TotoRuntimeError } from "toto-api-controller";
 import { TomeChallenge } from "../model/TomeChallenge";
+import { ChallengeFactory } from "../model/TomeChallengeFactory";
 
 export class ChallengesStore {
 
@@ -24,5 +25,18 @@ export class ChallengesStore {
             { upsert: true }
         );
 
+    }
+
+    /**
+     * Retrieves all challenges for the given topic.
+     * 
+     * @param topicId the topic
+     * @returns 
+     */
+    async getChallengesOfTopic(topicId: string): Promise<TomeChallenge[]> {
+
+        const docs = await this.challenges.find({ topicId: topicId }).toArray() as any[];
+
+        return docs.map(doc => ChallengeFactory.fromMongoDoc(doc));
     }
 }

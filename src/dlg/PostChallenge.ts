@@ -2,7 +2,7 @@ import { Request } from "express";
 import { ExecutionContext, TotoDelegate, UserContext, ValidationError } from "toto-api-controller";
 import { ControllerConfig } from "../Config";
 import { ChallengesStore } from "../store/ChallengesStore";
-import { JuiceChallenge } from "../model/challenges/JuiceChallenge";
+import { ChallengeFactory } from "../model/TomeChallengeFactory";
 
 /**
  * Creates a new Challenge for a given Tome Topic.
@@ -18,15 +18,7 @@ export class PostChallenge implements TotoDelegate {
         const client = await config.getMongoClient();
         const db = client.db(config.getDBName());
 
-        const challengeType = req.body.type;
-
-        if (!challengeType) throw new ValidationError(400, 'The challenge type is required');
-
-        // Create the appropriate Challenge instance based on the type
-        let challenge: JuiceChallenge;
-
-        if (challengeType == 'juice') challenge = JuiceChallenge.fromHTTPBody(req.body);
-        else throw new ValidationError(400, `Unsupported challenge type: ${challengeType}`);
+        const challenge = ChallengeFactory.fromHTTPBody(req.body);
 
         await new ChallengesStore(db, execContext).saveChallenge(challenge);
 
