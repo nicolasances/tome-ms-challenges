@@ -20,7 +20,7 @@ export class ChallengesStore {
 
         // Upsert the challenge based on its type and topicId
         await this.challenges.updateOne(
-            { topicId: challenge.topicId, type: challenge.type },
+            { topicId: challenge.topicId, sectionCode: challenge.sectionCode, type: challenge.type },
             { $set: challenge.toMongoDoc() },
             { upsert: true }
         );
