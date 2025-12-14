@@ -4,22 +4,10 @@ import { TomeChallenge } from "../model/TomeChallenge";
 
 export class ChallengesStore {
 
-    constructor(private db: Db, private execContext: ExecutionContext) { }
+    challenges: any;
 
-    /**
-     * Returns the MongoDB collection for the given challenge type.
-     * 
-     * @param challengeType The type of challenge
-     * @returns 
-     */
-    private getCollection(challengeType: string) {
-
-        switch (challengeType) {
-            case 'juice':
-                return this.db.collection('juice');
-            default:
-                throw new TotoRuntimeError(500, `Unknown challenge type: ${challengeType}`);
-        }
+    constructor(private db: Db, private execContext: ExecutionContext) {
+        this.challenges = this.db.collection('challenges');
     }
 
     /**
@@ -30,9 +18,7 @@ export class ChallengesStore {
     async saveChallenge(challenge: TomeChallenge): Promise<void> {
 
         // Upsert the challenge based on its type and topicId
-        const collection = this.getCollection(challenge.type);
-
-        await collection.updateOne(
+        await this.challenges.updateOne(
             { topicId: challenge.topicId, type: challenge.type },
             { $set: challenge.toMongoDoc() },
             { upsert: true }
