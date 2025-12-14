@@ -4,7 +4,7 @@
   "description": "Tome Challenges microservice",
   "main": "index.js",
   "scripts": {
-    "start:dev": "npx nodemon",
+    "dev": "npx nodemon",
     "build": "rm -rf ./build && tsc",
     "start": "node build/index.js"
   },
