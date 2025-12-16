@@ -4,6 +4,7 @@ import { TotoControllerConfig, ValidatorProps, Logger, SecretsManager } from "to
 const dbName = 'tomechallenges';
 const collections = {
     challenges: 'challenges',  // Collection for storing challenges
+    trials: 'trials',          // Collection for storing trials, which are attempts at challenges
 };
 
 export class ControllerConfig extends TotoControllerConfig {

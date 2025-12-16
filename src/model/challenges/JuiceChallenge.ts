@@ -1,5 +1,6 @@
 import { ValidationError } from "toto-api-controller";
 import { TomeChallenge } from "../TomeChallenge";
+import { TomeTest } from "../TomeTest";
 
 export class JuiceChallenge extends TomeChallenge {
 
@@ -10,14 +11,16 @@ export class JuiceChallenge extends TomeChallenge {
     
     public context: string;
     public toRemember: ToRemember[];
+    public tests: TomeTest[];
 
-    constructor({ topicId, topicCode, sectionCode, context, toRemember }: { topicId: string, topicCode: string, sectionCode: string, context: string, toRemember: ToRemember[] }) {
+    constructor({ topicId, topicCode, sectionCode, context, toRemember, tests }: { topicId: string, topicCode: string, sectionCode: string, context: string, toRemember: ToRemember[], tests: TomeTest[] }) {
         super();
         this.topicId = topicId;
         this.topicCode = topicCode;
         this.sectionCode = sectionCode;
         this.context = context;
         this.toRemember = toRemember;
+        this.tests = tests;
     }
 
     static fromMongoDoc(doc: any): JuiceChallenge {
@@ -26,7 +29,8 @@ export class JuiceChallenge extends TomeChallenge {
             topicCode: doc.topicCode,
             sectionCode: doc.sectionCode,
             context: doc.context,
-            toRemember: doc.toRemember
+            toRemember: doc.toRemember, 
+            tests: doc.tests
         });
     }
 
@@ -38,13 +42,15 @@ export class JuiceChallenge extends TomeChallenge {
         if (!body.sectionCode) throw new ValidationError(400, 'The sectionCode is required');
         if (!body.context) throw new ValidationError(400, 'The context is required');
         if (!body.toRemember || !Array.isArray(body.toRemember)) throw new ValidationError(400, 'The toRemember array is required');
+        if (!body.tests || !Array.isArray(body.tests)) throw new ValidationError(400, 'The tests array is required');
 
         return new JuiceChallenge({
             topicId: body.topicId,
             topicCode: body.topicCode,
             sectionCode: body.sectionCode,
             context: body.context,
-            toRemember: body.toRemember
+            toRemember: body.toRemember, 
+            tests: body.tests || []
         });
     }
 
@@ -55,7 +61,8 @@ export class JuiceChallenge extends TomeChallenge {
             topicCode: this.topicCode,
             sectionCode: this.sectionCode,
             context: this.context,
-            toRemember: this.toRemember
+            toRemember: this.toRemember, 
+            tests: this.tests
         };
     }
 
