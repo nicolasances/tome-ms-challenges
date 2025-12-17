@@ -5,6 +5,9 @@ import { TomeTest } from "../TomeTest";
 export class JuiceChallenge extends TomeChallenge {
 
     public type: string = "juice";
+    public name: string = "The Juice Challenge";
+    public description: string = "Figure out if you can remember the juice of this topic!";
+
     public topicId: string;
     public topicCode: string;
     public sectionCode: string;

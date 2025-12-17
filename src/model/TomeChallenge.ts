@@ -9,6 +9,8 @@ export abstract class TomeChallenge {
     public abstract topicId: string;
     public abstract topicCode: string;
     public abstract sectionCode: string;
+    public abstract name: string;
+    public abstract description: string;
 
     public abstract toMongoDoc(): any;
 
