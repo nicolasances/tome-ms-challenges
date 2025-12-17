@@ -11,12 +11,6 @@ export class DateTest extends TomeTest {
         year?: number;
     }
 
-    answer?: {
-        day?: number;
-        month?: number;
-        year?: number;
-    }
-
     constructor({ testId, question, correctAnswer }: { testId: string; question: string; correctAnswer: { day?: number; month?: number; year?: number; } }) {
         super();
         this.testId = testId;

@@ -6,7 +6,6 @@ export class FreeTextTest extends TomeTest {
     testId: string;
     question: string; 
     correctAnswer: string;
-    answer?: string;
 
     constructor({ testId, question, correctAnswer }: { testId: string; question: string; correctAnswer: string; }) {
         super();

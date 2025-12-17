@@ -1,4 +1,3 @@
-import { TomeTest } from "./TomeTest";
 
 export class Trial {
 
