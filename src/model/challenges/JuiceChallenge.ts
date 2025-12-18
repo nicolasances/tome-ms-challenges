@@ -1,10 +1,11 @@
 import { ValidationError } from "toto-api-controller";
-import { TomeChallenge } from "../TomeChallenge";
+import { SectionChallenge } from "../TomeChallenge";
 import { TomeTest } from "../TomeTest";
 
-export class JuiceChallenge extends TomeChallenge {
+export class JuiceChallenge extends SectionChallenge {
 
-    public type: string = "juice";
+    public type: "section" = "section";
+    public code: string = "juice";
     public name: string = "The Juice Challenge";
     public description: string = "Figure out if you can remember the juice of this topic!";
 
