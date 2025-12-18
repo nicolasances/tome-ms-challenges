@@ -24,7 +24,7 @@ export class PostTrial implements TotoDelegate {
         // 2. Check if an OPEN trial on the same challenge already exists. In that case, return an error.
         const existingTrials = await new TrialsStore(db, execContext).getOpenTrialsOnChallenge(trial.challengeId);
 
-        if (existingTrials.length > 0) throw new ValidationError(400, `An open trial on challenge ${trial.challengeId} already exists: ${existingTrials[0].id}`);
+        if (existingTrials.length > 0) throw new ValidationError(400, `An open trial on challenge ${trial.challengeId} already exists: ${existingTrials[0].id}`, "already-exists");
 
         // 3. Save the trial
         const trialId = await new TrialsStore(db, execContext).createTrial(trial);
