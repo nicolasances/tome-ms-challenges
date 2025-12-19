@@ -1,4 +1,4 @@
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { ExecutionContext } from "toto-api-controller";
 import { ControllerConfig } from "../Config";
 import { Trial } from "../model/Trial";
@@ -21,6 +21,19 @@ export class TrialsStore {
         const result = await this.db.collection(this.trials).insertOne(trial);
 
         return result.insertedId.toString();
+    }
+
+    /**
+     * Retrieves the trial with the given id.
+     * 
+     * @param trialId the Mongo ObjectId of the trial
+     * @returns 
+     */
+    async getTrialById(trialId: string): Promise<Trial | null> {
+
+        const doc = await this.db.collection(this.trials).findOne({ _id: new ObjectId(trialId) }) as Trial | null;
+
+        return doc ? Trial.fromMongoDoc(doc) : null;
     }
 
     /**
