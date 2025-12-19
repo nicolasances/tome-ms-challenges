@@ -1,6 +1,6 @@
 import { Db } from "mongodb";
 import { ExecutionContext, TotoRuntimeError } from "toto-api-controller";
-import { TomeChallenge } from "../model/TomeChallenge";
+import { SectionChallenge, TomeChallenge, TopicChallenge } from "../model/TomeChallenge";
 import { ChallengeFactory } from "../model/TomeChallengeFactory";
 
 export class ChallengesStore {
@@ -19,11 +19,22 @@ export class ChallengesStore {
     async saveChallenge(challenge: TomeChallenge): Promise<void> {
 
         // Upsert the challenge based on its type and topicId
-        await this.challenges.updateOne(
-            { topicId: challenge.topicId, sectionCode: challenge.sectionCode, type: challenge.type },
-            { $set: challenge.toMongoDoc() },
-            { upsert: true }
-        );
+        if (challenge.type == 'topic') {
+            await this.challenges.updateOne(
+                { topicId: (challenge as TopicChallenge).topicId, code: challenge.code },
+                { $set: challenge.toMongoDoc() },
+                { upsert: true }
+            );
+
+        }
+        else if (challenge.type == 'section') {
+            await this.challenges.updateOne(
+                { topicId: (challenge as SectionChallenge).topicId, sectionCode: (challenge as SectionChallenge).sectionCode, code: challenge.code },
+                { $set: challenge.toMongoDoc() },
+                { upsert: true }
+            );
+        }
+        else throw new TotoRuntimeError(500, `Unsupported challenge type: ${challenge.type}`);
 
     }
 
