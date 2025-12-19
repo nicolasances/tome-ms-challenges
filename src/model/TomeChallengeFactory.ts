@@ -7,7 +7,7 @@ export class ChallengeFactory {
 
     static fromMongoDoc(doc: any): TomeChallenge {
 
-        switch (doc.type) {
+        switch (doc.code) {
             case 'juice':
                 return JuiceChallenge.fromMongoDoc(doc);
             default:
@@ -17,30 +17,30 @@ export class ChallengeFactory {
 
     static fromHTTPBody(body: any): TomeChallenge {
 
-        if (!body.type) throw new ValidationError(400, 'The challenge type is required');
+        if (!body.code) throw new ValidationError(400, 'The challenge code is required');
 
-        switch (body.type) {
+        switch (body.code) {
             case 'juice':
                 return JuiceChallenge.fromHTTPBody(body);
             default:
-                throw new TotoRuntimeError(500, `Unsupported challenge type: ${body.type}`);
+                throw new TotoRuntimeError(500, `Unsupported challenge type: ${body.code}`);
         }
     }
 
     /**
-     * Retrieves the number of days after which a challenge of the given type expires (expiry in terms of when the trial results expire).
+     * Retrieves the number of days after which a challenge of the given code expires (expiry in terms of when the trial results expire).
      * 
-     * @param challengeType the type of challenge
+     * @param challengeCode the code of the challenge
      */
-    static getChallengeExpiration(challengeType: string): number {
+    static getChallengeExpiration(challengeCode: string): number {
 
-        if (!challengeType) throw new ValidationError(400, 'The challenge type is required');
+        if (!challengeCode) throw new ValidationError(400, 'The challenge type is required');
 
-        switch (challengeType) {
+        switch (challengeCode) {
             case 'juice':
                 return JuiceChallenge.EXPIRATION_DAYS;
             default:
-                throw new TotoRuntimeError(500, `Unsupported challenge type: ${challengeType}`);
+                throw new TotoRuntimeError(500, `Unsupported challenge type: ${challengeCode}`);
         }
     }
 }

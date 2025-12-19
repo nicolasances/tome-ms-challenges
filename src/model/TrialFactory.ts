@@ -29,7 +29,7 @@ export class TrialFactory {
 
         if (!challenge) throw new ValidationError(400, `Challenge with id ${challengeId} not found`);
 
-        const expirationDays = ChallengeFactory.getChallengeExpiration(challenge.type);
+        const expirationDays = ChallengeFactory.getChallengeExpiration(challenge.code);
 
         const now = new Date();
         const expiresOn = new Date(now.getTime() + expirationDays * 24 * 60 * 60 * 1000);
