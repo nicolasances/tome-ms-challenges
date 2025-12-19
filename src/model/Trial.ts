@@ -10,16 +10,18 @@ export class Trial {
     challengeId: string; 
 
     startedOn: Date;
-    completedOn: Date | null;
-    score: number | null;
+    completedOn?: Date;
+    expiresOn: Date;    // The date when the trial's results expire. This is typically defined at a challenge level, and tracked in the trial for convenience, but also for tracking and ML.
+    score?: number;
 
-    answers: TestAnswer[];
+    answers?: TestAnswer[];
 
-    constructor({ id, challengeId, startedOn, completedOn, score, answers }: { id?: string; challengeId: string; startedOn: Date; completedOn: Date | null; score: number | null; answers: TestAnswer[]; }) {
+    constructor({ id, challengeId, startedOn, expiresOn, completedOn, score, answers }: { id?: string; challengeId: string; startedOn: Date; expiresOn: Date; completedOn?: Date; score?: number; answers?: TestAnswer[]; }) {
         this.id = id;
         this.challengeId = challengeId;
         this.startedOn = startedOn;
         this.completedOn = completedOn;
+        this.expiresOn = expiresOn;
         this.score = score;
         this.answers = answers;
     }
@@ -29,9 +31,10 @@ export class Trial {
             id: data.id,
             challengeId: data.challengeId,
             startedOn: new Date(data.startedOn),
-            completedOn: data.completedOn ? new Date(data.completedOn) : null,
-            score: data.score !== undefined ? data.score : null,
-            answers: data.answers || [],
+            expiresOn: new Date(data.expiresOn),
+            completedOn: data.completedOn ? new Date(data.completedOn) : undefined,
+            score: data.score !== undefined ? data.score : undefined,
+            answers: data.answers,
         });
     }
 
@@ -40,9 +43,10 @@ export class Trial {
             id: doc._id.toString(),
             challengeId: doc.challengeId,
             startedOn: new Date(doc.startedOn),
-            completedOn: doc.completedOn ? new Date(doc.completedOn) : null,
-            score: doc.score !== undefined ? doc.score : null,
-            answers: doc.answers || [],
+            expiresOn: new Date(doc.expiresOn),
+            completedOn: doc.completedOn ? new Date(doc.completedOn) : undefined,
+            score: doc.score !== undefined ? doc.score : undefined,
+            answers: doc.answers,
         });
     }
 
@@ -50,6 +54,7 @@ export class Trial {
         return {
             challengeId: this.challengeId,
             startedOn: this.startedOn,
+            expiresOn: this.expiresOn,
             completedOn: this.completedOn,
             score: this.score,
             answers: this.answers,

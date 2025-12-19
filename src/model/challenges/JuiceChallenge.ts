@@ -4,6 +4,8 @@ import { TomeTest } from "../TomeTest";
 
 export class JuiceChallenge extends SectionChallenge {
 
+    static EXPIRATION_DAYS = 60;
+
     public type: "section" = "section";
     public code: string = "juice";
     public name: string = "The Juice Challenge";

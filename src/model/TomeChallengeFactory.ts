@@ -26,4 +26,21 @@ export class ChallengeFactory {
                 throw new TotoRuntimeError(500, `Unsupported challenge type: ${body.type}`);
         }
     }
+
+    /**
+     * Retrieves the number of days after which a challenge of the given type expires (expiry in terms of when the trial results expire).
+     * 
+     * @param challengeType the type of challenge
+     */
+    static getChallengeExpiration(challengeType: string): number {
+
+        if (!challengeType) throw new ValidationError(400, 'The challenge type is required');
+
+        switch (challengeType) {
+            case 'juice':
+                return JuiceChallenge.EXPIRATION_DAYS;
+            default:
+                throw new TotoRuntimeError(500, `Unsupported challenge type: ${challengeType}`);
+        }
+    }
 }
