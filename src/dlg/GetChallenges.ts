@@ -5,9 +5,14 @@ import { ChallengesStore } from "../store/ChallengesStore";
 import { TomeChallenge } from "../model/TomeChallenge";
 
 /**
- * Retrieves Challenges for a given Tome Topic.
+ * Retrieves Challenges. 
+ * 
+ * Supports the following possibilities: 
+ * 1. Get all Challenges for a give Topic. That will extract both Section and Topic Challenges.
+ * 2. Get all General Challenges (not yet implemented).
+ * 
  */
-export class GetTopicChallenges implements TotoDelegate {
+export class GetChallenges implements TotoDelegate {
 
     async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<GetTopicChallengesResponse> {
 
