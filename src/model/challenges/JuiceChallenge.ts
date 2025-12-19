@@ -20,8 +20,9 @@ export class JuiceChallenge extends SectionChallenge {
     public toRemember: ToRemember[];
     public tests: TomeTest[];
 
-    constructor({ topicId, topicCode, sectionIndex, sectionCode, context, toRemember, tests }: { topicId: string, topicCode: string, sectionIndex: number, sectionCode: string, context: string, toRemember: ToRemember[], tests: TomeTest[] }) {
+    constructor({ id, topicId, topicCode, sectionIndex, sectionCode, context, toRemember, tests }: { id?: string, topicId: string, topicCode: string, sectionIndex: number, sectionCode: string, context: string, toRemember: ToRemember[], tests: TomeTest[] }) {
         super();
+        this.id = id;
         this.topicId = topicId;
         this.topicCode = topicCode;
         this.sectionIndex = sectionIndex;
@@ -33,6 +34,7 @@ export class JuiceChallenge extends SectionChallenge {
 
     static fromMongoDoc(doc: any): JuiceChallenge {
         return new JuiceChallenge({
+            id: doc._id?.toString(),
             topicId: doc.topicId,
             topicCode: doc.topicCode,
             sectionIndex: doc.sectionIndex,

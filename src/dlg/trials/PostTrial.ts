@@ -1,7 +1,6 @@
 import { Request } from "express";
 import { ExecutionContext, TotoDelegate, UserContext, ValidationError } from "toto-api-controller";
 import { ControllerConfig } from "../../Config";
-import { Trial } from "../../model/Trial";
 import { TrialsStore } from "../../store/TrialsStore";
 import { TrialFactory } from "../../model/TrialFactory";
 

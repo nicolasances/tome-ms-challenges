@@ -1,6 +1,8 @@
 import { TomeTest } from "./TomeTest";
 
 export abstract class TomeChallenge {
+
+    public id?: string;                // MongoDB ObjectId
     public abstract type: "topic" | "section" | "general";
     public abstract code: string;           // Unique code for the challenge
     public abstract name: string;           // Human-friendly name
@@ -29,4 +31,4 @@ export abstract class SectionChallenge extends TopicChallenge {
 }
 
 // TBD: Challenges that are not related to a single Topic
-export abstract class GeneralChallenge {}
+export abstract class GeneralChallenge extends TomeChallenge {}
