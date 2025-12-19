@@ -1,4 +1,4 @@
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { ExecutionContext, TotoRuntimeError } from "toto-api-controller";
 import { SectionChallenge, TomeChallenge, TopicChallenge } from "../model/TomeChallenge";
 import { ChallengeFactory } from "../model/TomeChallengeFactory";
@@ -9,6 +9,19 @@ export class ChallengesStore {
 
     constructor(private db: Db, private execContext: ExecutionContext) {
         this.challenges = this.db.collection('challenges');
+    }
+
+    /**
+     * Retrieves the challenge with the given id.
+     * 
+     * @param challengeId the Mongo ObjectId of the challenge
+     * @returns 
+     */
+    async getChallengeById(challengeId: string): Promise<TomeChallenge | null> {
+
+        const doc = await this.challenges.findOne({ _id: new ObjectId(challengeId) }) as TomeChallenge | null;
+
+        return doc ? ChallengeFactory.fromMongoDoc(doc) : null;
     }
 
     /**

@@ -6,7 +6,7 @@ import { ChallengeFactory } from "./TomeChallengeFactory";
 
 export class TrialFactory {
 
-    challengesStore: any;
+    challengesStore: ChallengesStore;
 
     constructor(private db: Db, private execContext: ExecutionContext) {
 
