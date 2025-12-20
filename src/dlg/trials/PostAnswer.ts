@@ -3,6 +3,7 @@ import { ExecutionContext, TotoDelegate, UserContext, ValidationError } from "to
 import { ControllerConfig } from "../../Config";
 import { TomeTest } from "../../model/TomeTest";
 import { TestScorerFactory } from "../../core/Scoring";
+import { TrialsStore } from "../../store/TrialsStore";
 
 /**
  * Post an Answer for a given test. 
@@ -33,7 +34,7 @@ export class PostAnswer implements TotoDelegate {
         const score = await scorer.scoreAnswer(answer, test, trialId);
 
         // 3. Save the answer result in the database
-        // TODO
+        await new TrialsStore(db, execContext).saveTrialTestAnswer(trialId, {answer: answer, score: score, testId: test.testId} );
 
         // 4. Return the result 
         return {

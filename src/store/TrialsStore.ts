@@ -1,7 +1,7 @@
 import { Db, ObjectId } from "mongodb";
 import { ExecutionContext } from "toto-api-controller";
 import { ControllerConfig } from "../Config";
-import { Trial } from "../model/Trial";
+import { TestAnswer, Trial } from "../model/Trial";
 
 export class TrialsStore {
 
@@ -58,6 +58,44 @@ export class TrialsStore {
         const docs = await this.db.collection(this.trials).find({ challengeId: challengeId, $or: [{ completedOn: null }, { completedOn: { $exists: false } }] }).toArray();
 
         return docs.map(doc => Trial.fromMongoDoc(doc));
+    }
+
+    /**
+     * Updates the Trial with the given test answer.
+     * 
+     * IMPORTANT: this method ensures that if an answer for the given testId already exists, it is replaced.
+     * 
+     * @param trialId the Id of the trial
+     * @param testAnswer the test answer
+     */
+    async saveTrialTestAnswer(trialId: string, testAnswer: TestAnswer): Promise<void> {
+
+        // First, ensure the answers field is initialized as an array if it's null or doesn't exist
+        await this.db.collection(this.trials).updateOne(
+            { _id: new ObjectId(trialId), answers: null },
+            {
+                $set: { answers: [] }
+            }
+        );
+
+        // Try to update an existing answer with matching testId
+        const result = await this.db.collection(this.trials).updateOne(
+            { _id: new ObjectId(trialId), "answers.testId": testAnswer.testId },
+            {
+                $set: { "answers.$": testAnswer }
+            }
+        );
+
+        // If no existing answer was found, add the new answer
+        if (result.matchedCount === 0) {
+            await this.db.collection(this.trials).updateOne(
+                { _id: new ObjectId(trialId) },
+                {
+                    $push: { answers: testAnswer }
+                }
+            );
+        }
+
     }
 
     /**
