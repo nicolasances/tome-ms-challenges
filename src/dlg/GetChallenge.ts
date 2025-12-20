@@ -5,24 +5,26 @@ import { ChallengesStore } from "../store/ChallengesStore";
 import { TomeChallenge } from "../model/TomeChallenge";
 
 /**
- * Retrieves Challenges for a given Tome Topic.
+ * Retrieves a specific Challenge, identified by its id.
+ * 
  */
-export class GetTopicChallenges implements TotoDelegate {
+export class GetChallenge implements TotoDelegate {
 
-    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<GetTopicChallengesResponse> {
+    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<GetChallengeResponse> {
 
         const config = execContext.config as ControllerConfig;
 
         const client = await config.getMongoClient();
         const db = client.db(config.getDBName());
 
-        const challenges = await new ChallengesStore(db, execContext).getChallengesOfTopic(req.params.topicId);
+        const challenge = await new ChallengesStore(db, execContext).getChallengeById(req.params.challengeId);
 
-        return { challenges: challenges };
+        return { challenge: challenge! };
+
     }
 
 }
 
-export interface GetTopicChallengesResponse {
-    challenges: TomeChallenge[];
+export interface GetChallengeResponse {
+    challenge: TomeChallenge;
 }
