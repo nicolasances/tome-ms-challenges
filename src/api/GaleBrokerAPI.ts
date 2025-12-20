@@ -1,4 +1,4 @@
-import { TotoAPI, TotoAPIRequest } from "toto-api-controller"
+import { TotoAPI, TotoAPIRequest, ValidationError } from "toto-api-controller"
 import { v4 as uuidv4 } from 'uuid';
 
 export class GaleBrokerAPI extends TotoAPI {
@@ -6,15 +6,12 @@ export class GaleBrokerAPI extends TotoAPI {
     async postTask(taskId: string, taskInputData: any): Promise<AgentTaskResponse> {
 
         return this.post(new TotoAPIRequest('/tasks', {
-            method: 'POST',
-            body: JSON.stringify({
-                command: { command: "start" },
-                correlationId: uuidv4(),
-                taskId: taskId,
-                taskInputData: taskInputData
-            } as AgentTaskRequest)
-        }), AgentTaskResponse)
-    }
+            command: { command: "start" },
+            correlationId: uuidv4(),
+            taskId: taskId,
+            taskInputData: taskInputData
+        } as AgentTaskRequest), AgentTaskResponse)
+}
 
 }
 
@@ -35,6 +32,9 @@ export class AgentTaskResponse {
     }
 
     static fromParsedHTTPResponseBody(body: any): AgentTaskResponse {
+
+        if ("code" in body && body.code == 400) throw new ValidationError(400, body.message);
+
         return new AgentTaskResponse({
             stopReason: body.stopReason,
             taskOutput: body.taskOutput
