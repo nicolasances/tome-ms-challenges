@@ -32,3 +32,4 @@ Therefore, Trials' results are designed to **expire** after a certain time perio
 Each Challenge is different, therefore each Challenge can define its own **Trial Expiry Period**. <br>
 After that period, the Trial is considered **expired** and the user needs to re-attempt the Challenge to re-validate their knowledge. <br>
 This allows Tome to implement **spaced repetition** techniques to maximize long-term retention of knowledge.
+

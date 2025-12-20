@@ -37,6 +37,17 @@ export class TrialsStore {
     }
 
     /**
+     * Retrieves all trials
+     * @returns 
+     */
+    async getTrials(): Promise<Trial[]> {
+
+        const docs = await this.db.collection(this.trials).find({}).toArray();
+
+        return docs.map(doc => Trial.fromMongoDoc(doc));
+    }   
+
+    /**
      * Finds the open trials on a given challenge.
      * 
      * @param challengeId the challenge id
