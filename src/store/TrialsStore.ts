@@ -37,6 +37,26 @@ export class TrialsStore {
     }
 
     /**
+     * Marks the trial as completed and updates the score.
+     * 
+     * @param trialId the trial 
+     * @param completedOn the date the trial was completed on 
+     * @param score the final score
+     */
+    async markTrialAsCompleted(trialId: string, completedOn: Date, score: number): Promise<void> {
+
+        await this.db.collection(this.trials).updateOne(
+            { _id: new ObjectId(trialId) },
+            {
+                $set: {
+                    completedOn: completedOn,
+                    score: score
+                }
+            }
+        );
+    }
+
+    /**
      * Retrieves all trials
      * @returns 
      */
