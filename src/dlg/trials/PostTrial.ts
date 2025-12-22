@@ -19,7 +19,7 @@ export class PostTrial implements TotoDelegate {
         const db = client.db(config.getDBName());
 
         // 2. Check if an OPEN trial on the same challenge already exists. In that case, return the trial id
-        const existingTrials = await new TrialsStore(db, execContext).getOpenTrialsOnChallenge(req.body.challengeId);
+        const existingTrials = await new TrialsStore(db, execContext).getNonExpiredTrialsOnChallenges([req.body.challengeId]);
 
         if (existingTrials.length > 0) return { id: existingTrials[0].id };
 
