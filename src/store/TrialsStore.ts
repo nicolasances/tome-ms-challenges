@@ -131,7 +131,6 @@ export class TrialsStore {
         const docs = await this.db.collection(this.trials).find({
             challengeId: { $in: challengeIds },
             expiresOn: { $gt: now },
-            $or: [{ completedOn: null }, { completedOn: { $exists: false } }]
         }).toArray();
 
         return docs.map(doc => Trial.fromMongoDoc(doc));
