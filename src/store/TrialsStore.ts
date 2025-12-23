@@ -2,6 +2,7 @@ import { Db, ObjectId } from "mongodb";
 import { ExecutionContext } from "toto-api-controller";
 import { ControllerConfig } from "../Config";
 import { TestAnswer, Trial } from "../model/Trial";
+import { Options } from "../dlg/trials/GetTrials";
 
 export class TrialsStore {
 
@@ -34,6 +35,26 @@ export class TrialsStore {
         const doc = await this.db.collection(this.trials).findOne({ _id: new ObjectId(trialId) }) as Trial | null;
 
         return doc ? Trial.fromMongoDoc(doc) : null;
+    }
+
+    /**
+     * Marks the trial as completed and updates the score.
+     * 
+     * @param trialId the trial 
+     * @param completedOn the date the trial was completed on 
+     * @param score the final score
+     */
+    async markTrialAsCompleted(trialId: string, completedOn: Date, score: number): Promise<void> {
+
+        await this.db.collection(this.trials).updateOne(
+            { _id: new ObjectId(trialId) },
+            {
+                $set: {
+                    completedOn: completedOn,
+                    score: score
+                }
+            }
+        );
     }
 
     /**
@@ -111,7 +132,6 @@ export class TrialsStore {
         const docs = await this.db.collection(this.trials).find({
             challengeId: { $in: challengeIds },
             expiresOn: { $gt: now },
-            $or: [{ completedOn: null }, { completedOn: { $exists: false } }]
         }).toArray();
 
         return docs.map(doc => Trial.fromMongoDoc(doc));

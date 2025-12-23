@@ -13,7 +13,7 @@ import { TrialsStore } from "../store/TrialsStore";
  * 2. Get all General Challenges (not yet implemented).
  * 
  */
-export class GetChallenges implements TotoDelegate {
+export class GetTopicChallenges implements TotoDelegate {
 
     async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<GetTopicChallengesResponse> {
 
@@ -24,7 +24,7 @@ export class GetChallenges implements TotoDelegate {
 
         const options = GetChallengesOptions.fromHTTPRequest(req);
 
-        const challenges = await new ChallengesStore(db, execContext).getChallenges();
+        const challenges = await new ChallengesStore(db, execContext).getChallengesOfTopic(req.params.topicId);
 
         if (options.includeStatus) {
             

@@ -52,6 +52,18 @@ export class ChallengesStore {
     }
 
     /**
+     * Just get me all the freakin' challenges.
+     * 
+     * @returns all the challenges
+     */
+    async getChallenges(): Promise<TomeChallenge[]> {
+
+        const docs = await this.challenges.find({}).toArray() as any[];
+
+        return docs.map(doc => ChallengeFactory.fromMongoDoc(doc));
+    }
+
+    /**
      * Retrieves all challenges for the given topic.
      * 
      * @param topicId the topic
@@ -63,4 +75,5 @@ export class ChallengesStore {
 
         return docs.map(doc => ChallengeFactory.fromMongoDoc(doc));
     }
+
 }
