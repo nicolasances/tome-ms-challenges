@@ -13,7 +13,7 @@ import { TrialsStore } from "../store/TrialsStore";
  * 2. Get all General Challenges (not yet implemented).
  * 
  */
-export class GetChallenges implements TotoDelegate {
+export class GetTopicChallenges implements TotoDelegate {
 
     async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<GetTopicChallengesResponse> {
 
@@ -24,7 +24,7 @@ export class GetChallenges implements TotoDelegate {
 
         const options = GetChallengesOptions.fromHTTPRequest(req);
 
-        const challenges = await new ChallengesStore(db, execContext).getChallenges();
+        const challenges = await new ChallengesStore(db, execContext).getChallengesOfTopic(req.params.topicId);
 
         if (options.includeStatus) {
             
@@ -34,7 +34,7 @@ export class GetChallenges implements TotoDelegate {
             // 2. Map challenges to ExtendedChallenge with status
             const extendedChallenges: ExtendedChallenge[] = challenges.map(challenge => ({
                 challenge: challenge, 
-                status: trials.filter(t => t.challengeId === challenge.id).length === 0 ? "not-started" : trials.some(t => (t.challengeId === challenge.id! && !t.completedOn)) ? "in-progress" : "completed"
+                status: trials.filter(t => t.challengeId === challenge.id).length === 0 ? "not-started" : trials.some(t => !t.completedOn) ? "in-progress" : "completed"
             }));
 
             return { challenges: extendedChallenges };
