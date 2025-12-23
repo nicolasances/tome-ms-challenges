@@ -38,14 +38,16 @@ export class PostAnswer implements TotoDelegate {
         // 3. Save the answer result in the database
         await new TrialsStore(db, execContext).saveTrialTestAnswer(trialId, {answer: answer, score: score, testId: test.testId} );
 
-        // 4. Check if the trial is now complete
-        // 4.1. Check how many tests are in the challenge
-        const challenge = await new ChallengesStore(db, execContext).getChallengeById(challengeId);
-
-        const totalTests = challenge?.tests.length || 0;
-
         // 4.2. Check how many answers have been submitted for this trial
         const trial = await new TrialsStore(db, execContext).getTrialById(trialId);
+
+        if (!trial) throw new ValidationError(404, `Trial with id ${trialId} not found`);   
+
+        // 4. Check if the trial is now complete
+        // 4.1. Check how many tests are in the challenge
+        const challenge = await new ChallengesStore(db, execContext).getChallengeById(trial.challengeId);
+
+        const totalTests = challenge?.tests.length || 0;
 
         const submittedAnswers = trial?.answers?.length || 0;
 
