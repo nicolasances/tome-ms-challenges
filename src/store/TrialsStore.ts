@@ -2,6 +2,7 @@ import { Db, ObjectId } from "mongodb";
 import { ExecutionContext } from "toto-api-controller";
 import { ControllerConfig } from "../Config";
 import { TestAnswer, Trial } from "../model/Trial";
+import { Options } from "../dlg/trials/GetTrials";
 
 export class TrialsStore {
 
