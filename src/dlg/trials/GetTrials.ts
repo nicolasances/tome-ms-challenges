@@ -30,6 +30,15 @@ export class GetTrials implements TotoDelegate {
 
             return { trials: trials, message: `Non-Expired Trials for challenge ${options.challengeCode} on topic ${options.topicId}` };
         }
+        else if (options.topicId && !options.challengeCode) {
+
+            const challenges = await new ChallengesStore(db, execContext).getChallengesOfTopic(options.topicId);
+
+            const trials = await new TrialsStore(db, execContext).getNonExpiredTrialsOnChallenges(challenges.map(c => c.id!.toString()));
+
+            return { trials: trials, message: `Non-Expired Trials on topic ${options.topicId}` };
+
+        }
 
         // Unfiltered
         const trials = await new TrialsStore(db, execContext).getTrials();
