@@ -34,7 +34,7 @@ export class GetTopicChallenges implements TotoDelegate {
             // 2. Map challenges to ExtendedChallenge with status
             const extendedChallenges: ExtendedChallenge[] = challenges.map(challenge => ({
                 challenge: challenge, 
-                status: trials.filter(t => t.challengeId === challenge.id).length === 0 ? "not-started" : trials.some(t => !t.completedOn) ? "in-progress" : "completed"
+                status: trials.filter(t => t.challengeId === challenge.id).length === 0 ? "not-started" : trials.some(t => (t.challengeId === challenge.id! && !t.completedOn)) ? "in-progress" : "completed"
             }));
 
             return { challenges: extendedChallenges };
