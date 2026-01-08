@@ -67,4 +67,5 @@ export interface TestAnswer {
     testId: string; 
     answer: any;
     score: number;
+    details?: any;
 }

@@ -1,9 +1,9 @@
 import { DateTest } from "../../model/tests/DateTest";
-import { TestScorer } from "../Scoring";
+import { ScoreResult, TestScorer } from "../Scoring";
 
 export class DateScorer implements TestScorer<DateTest> {
 
-    async scoreAnswer(answer: any, test: DateTest, trialId: string): Promise<number> {
+    async scoreAnswer(answer: any, test: DateTest, trialId: string): Promise<ScoreResult> {
 
         let score = 0;
         const correctAnswer = test.correctAnswer;
@@ -37,7 +37,7 @@ export class DateScorer implements TestScorer<DateTest> {
             score = correctComponents / totalComponents;
         }
 
-        return score;
+        return { score };
 
     }
 

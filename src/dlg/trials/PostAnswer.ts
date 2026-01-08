@@ -36,12 +36,12 @@ export class PostAnswer implements TotoDelegate {
         const score = await scorer.scoreAnswer(answer, test, trialId);
 
         // 3. Save the answer result in the database
-        await new TrialsStore(db, execContext).saveTrialTestAnswer(trialId, {answer: answer, score: score, testId: test.testId} );
+        await new TrialsStore(db, execContext).saveTrialTestAnswer(trialId, {answer: answer, score: score.score, details: score.details, testId: test.testId} );
 
         // 4.2. Check how many answers have been submitted for this trial
         const trial = await new TrialsStore(db, execContext).getTrialById(trialId);
 
-        if (!trial) throw new ValidationError(404, `Trial with id ${trialId} not found`);   
+        if (!trial) throw new ValidationError(404, `Trial with id ${trialId} not found`);
 
         // 4. Check if the trial is now complete
         // 4.1. Check how many tests are in the challenge

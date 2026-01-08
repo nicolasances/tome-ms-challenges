@@ -1,7 +1,7 @@
 import { ExecutionContext } from "toto-api-controller";
 import { GaleBrokerAPI } from "../../api/GaleBrokerAPI";
 import { OpenTest } from "../../model/tests/OpenTest";
-import { TestScorer } from "../Scoring";
+import { ScoreResult, TestScorer } from "../Scoring";
 import { ChallengesStore } from "../../store/ChallengesStore";
 import { ControllerConfig } from "../../Config";
 import { TrialsStore } from "../../store/TrialsStore";
@@ -16,7 +16,7 @@ export class JuiceQuestionScorer implements TestScorer<OpenTest> {
 
     constructor(private execContext: ExecutionContext) { }
 
-    async scoreAnswer(answer: any, test: OpenTest, trialId: string): Promise<number> {
+    async scoreAnswer(answer: any, test: OpenTest, trialId: string): Promise<ScoreResult> {
 
         const logger = this.execContext.logger;
         const cid = this.execContext.cid;
@@ -39,13 +39,14 @@ export class JuiceQuestionScorer implements TestScorer<OpenTest> {
         logger.compute(cid, `Received response from Gale Agent for scoring question: ${JSON.stringify(response)}`);
 
         const gotRight = (response.taskOutput as TaskOutput).numAspectsFound;
+        const juiceIndexesFound = (response.taskOutput as TaskOutput).juiceIndexesFound;
         const numAspects = challenge.toRemember.length;
 
         let score = gotRight / numAspects;
 
         logger.compute(cid, `Score for test ${test.testId} in trial ${trialId} is ${score} (${gotRight} aspects found out of ${numAspects})`);
 
-        return score;
+        return {score, details: { juiceIndexesFound } };
     }
 }
 
