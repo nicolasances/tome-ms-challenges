@@ -13,16 +13,18 @@ export class Trial {
     completedOn?: Date;
     expiresOn: Date;    // The date when the trial's results expire. This is typically defined at a challenge level, and tracked in the trial for convenience, but also for tracking and ML.
     score?: number;
+    attempt: boolean;   // A trial is marked as "attempt" if it was a failed attempt that was then repeated. You should in that case expect another trial for the same challenge that is not marked as attempt and has most likely a better score.
 
     answers?: TestAnswer[];
 
-    constructor({ id, challengeId, startedOn, expiresOn, completedOn, score, answers }: { id?: string; challengeId: string; startedOn: Date; expiresOn: Date; completedOn?: Date; score?: number; answers?: TestAnswer[]; }) {
+    constructor({ id, challengeId, startedOn, expiresOn, completedOn, score, answers, attempt }: { id?: string; challengeId: string; startedOn: Date; expiresOn: Date; completedOn?: Date; score?: number; answers?: TestAnswer[]; attempt?: boolean }) {
         this.id = id;
         this.challengeId = challengeId;
         this.startedOn = startedOn;
         this.completedOn = completedOn;
         this.expiresOn = expiresOn;
         this.score = score;
+        this.attempt = attempt || false;
         this.answers = answers;
     }
 
@@ -35,6 +37,7 @@ export class Trial {
             completedOn: data.completedOn ? new Date(data.completedOn) : undefined,
             score: data.score !== undefined ? data.score : undefined,
             answers: data.answers,
+            attempt: data.attempt,
         });
     }
 
@@ -47,6 +50,7 @@ export class Trial {
             completedOn: doc.completedOn ? new Date(doc.completedOn) : undefined,
             score: doc.score !== undefined ? doc.score : undefined,
             answers: doc.answers,
+            attempt: doc.attempt || false,
         });
     }
 
@@ -58,6 +62,7 @@ export class Trial {
             completedOn: this.completedOn,
             score: this.score,
             answers: this.answers,
+            attempt: this.attempt,
         };
     }
 
