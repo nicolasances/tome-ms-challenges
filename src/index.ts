@@ -9,6 +9,7 @@ import { PostAnswer } from "./dlg/trials/PostAnswer";
 import { GetTrials } from "./dlg/trials/GetTrials";
 import { RecalculateTrialScore } from "./dlg/trials/RecalculateTrialScore";
 import { GetChallenges } from "./dlg/GetChallenges";
+import { DeleteTrial } from "./dlg/trials/DeleteTrial";
 
 const api = new TotoAPIController(new ControllerConfig({ apiName: "tome-ms-challenges" }, {defaultHyperscaler: "aws", defaultSecretsManagerLocation: "aws"}), { basePath: '/tomechallenges' });
 
@@ -21,6 +22,7 @@ api.path('GET', '/topics/:topicId/challenges', new GetTopicChallenges());
 api.path('POST', '/trials', new PostTrial());
 api.path('GET', '/trials', new GetTrials());
 api.path('GET', '/trials/:trialId', new GetTrial());
+api.path('DELETE', '/trials/:trialId', new DeleteTrial());
 api.path('POST', '/trials/:trialId/answers', new PostAnswer());
 api.path('GET', '/trials/:trialId/score', new RecalculateTrialScore());
 

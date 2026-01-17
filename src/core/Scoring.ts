@@ -13,8 +13,13 @@ export interface TestScorer<T extends TomeTest> {
      * @param test the test to score against
      * @returns a score between 0 and 1
      */
-    scoreAnswer(answer: any, test: T, trialId: string): Promise<number>;
+    scoreAnswer(answer: any, test: T, trialId: string): Promise<ScoreResult>;
 
+}
+
+export interface ScoreResult {
+    score: number;
+    details?: any;
 }
 
 /**

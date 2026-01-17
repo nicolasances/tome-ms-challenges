@@ -6,8 +6,6 @@ import { TrialFactory } from "../../model/TrialFactory";
 
 /**
  * Creates a new trial for a given Tome Topic and Challenge. 
- * 
- * If there is already a Challenge of the same type for the given Topic, nothing will happen.
  */
 export class PostTrial implements TotoDelegate {
 
@@ -17,17 +15,25 @@ export class PostTrial implements TotoDelegate {
 
         const client = await config.getMongoClient();
         const db = client.db(config.getDBName());
+        const trialsStore = new TrialsStore(db, execContext);
 
-        // 2. Check if an OPEN trial on the same challenge already exists. In that case, return the trial id
-        const existingTrials = await new TrialsStore(db, execContext).getNonExpiredTrialsOnChallenges([req.body.challengeId]);
+        // Check if there is an INCOMPLETE, NON-EXPIRED trial for the same challenge. If yes, we do not allow creating a new trial and return that one instead 
+        const openNonExpiredTrials = await trialsStore.getOpenNonExpiredTrialsOnChallenges([req.body.challengeId]);
 
-        if (existingTrials.length > 0) return { id: existingTrials[0].id };
+        if (openNonExpiredTrials && openNonExpiredTrials.length > 0) return { id: openNonExpiredTrials[0].id! };
 
-        // 3. Create and save the trial
+        // 1 Create and save the trial
         const trial = await new TrialFactory(db, execContext).newTrial(req.body.challengeId);
 
-        // 3. Save the trial
-        const trialId = await new TrialsStore(db, execContext).createTrial(trial);
+        // 2. Save the trial
+        const trialId = await trialsStore.createTrial(trial);
+
+        // 3. Important: if there is an existing COMPLETED trial for the same challenge that is NOT EXPIRED, mark it as "attempt"
+        const nonExpiredCompletedTrials = await trialsStore.getCompletedNonExpiredTrialsOnChallenges([req.body.challengeId]);
+
+        if (nonExpiredCompletedTrials && nonExpiredCompletedTrials.length > 0) {
+            await trialsStore.markTrialsAsAttempt(nonExpiredCompletedTrials.map(trial => trial.id!));
+        }
 
         return { id: trialId };
     }

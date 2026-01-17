@@ -66,7 +66,7 @@ export class TrialsStore {
         const docs = await this.db.collection(this.trials).find({}).toArray();
 
         return docs.map(doc => Trial.fromMongoDoc(doc));
-    }   
+    }
 
     /**
      * Finds the open trials on a given challenge.
@@ -120,6 +120,33 @@ export class TrialsStore {
     }
 
     /**
+     * Deletes the specified trial
+     */
+    async deleteTrial(trialId: string): Promise<void> {
+
+        await this.db.collection(this.trials).deleteOne({ _id: new ObjectId(trialId) });
+    }
+
+    /**
+     * Retrieves all non-expired trials on the given challenges that have not been completed.
+     * 
+     * @param challengeIds 
+     * @returns 
+     */
+    async getOpenNonExpiredTrialsOnChallenges(challengeIds: string[]): Promise<Trial[]> {
+
+        const now = new Date();
+
+        const docs = await this.db.collection(this.trials).find({
+            challengeId: { $in: challengeIds },
+            expiresOn: { $gt: now },
+            $or: [{ completedOn: null }, { completedOn: { $exists: false } }]
+        }).toArray();
+
+        return docs.map(doc => Trial.fromMongoDoc(doc));
+    }
+
+    /**
      * Retrieves all non-expired trials on the given challenges.
      * 
      * @param challengeIds 
@@ -135,5 +162,39 @@ export class TrialsStore {
         }).toArray();
 
         return docs.map(doc => Trial.fromMongoDoc(doc));
+    }
+
+    /**
+     * Retrieves all non-expired trials on the given challenges that have been completed.
+     * 
+     * @param challengeIds 
+     * @returns 
+     */
+    async getCompletedNonExpiredTrialsOnChallenges(challengeIds: string[]): Promise<Trial[]> {
+
+        const now = new Date();
+
+        const docs = await this.db.collection(this.trials).find({
+            challengeId: { $in: challengeIds },
+            completedOn: { $ne: null },
+            expiresOn: { $gt: now },
+        }).toArray();
+
+        return docs.map(doc => Trial.fromMongoDoc(doc));
+    }
+
+    /**
+     * Marks the specified trials as "attempt"
+     * 
+     * @param trialIds 
+     */
+    async markTrialsAsAttempt(trialIds: string[]): Promise<void> {
+
+        await this.db.collection(this.trials).updateMany(
+            { _id: { $in: trialIds.map(id => new ObjectId(id)) } },
+            {
+                $set: { attempt: true }
+            }
+        );
     }
 }
