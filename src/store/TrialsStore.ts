@@ -120,6 +120,14 @@ export class TrialsStore {
     }
 
     /**
+     * Deletes the specified trial
+     */
+    async deleteTrial(trialId: string): Promise<void> {
+
+        await this.db.collection(this.trials).deleteOne({ _id: new ObjectId(trialId) });
+    }
+
+    /**
      * Retrieves all non-expired trials on the given challenges that have not been completed.
      * 
      * @param challengeIds 
