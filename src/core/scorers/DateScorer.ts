@@ -8,36 +8,49 @@ export class DateScorer implements TestScorer<DateTest> {
         let score = 0;
         const correctAnswer = test.correctAnswer;
 
-        // Track how many of the components are correct
-        let totalComponents = 0;
-        let correctComponents = 0;
-
         if (correctAnswer.year !== undefined && correctAnswer.year !== null) {
-            totalComponents++;
             if (answer.year === correctAnswer.year) {
-                correctComponents++;
+                return { score: 1  };
             }
         }
 
-        if (correctAnswer.month !== undefined && correctAnswer.month !== null) {
-            totalComponents++;
-            if (answer.month === correctAnswer.month) {
-                correctComponents++;
-            }
-        }
+        return { score: 0 };
 
-        if (correctAnswer.day !== undefined && correctAnswer.day !== null) {
-            totalComponents++;
-            if (answer.day === correctAnswer.day) {
-                correctComponents++;
-            }
-        }
+        // IMPORTANT NOTE:
+        // -----------------------------------------------------------------
+        // For now, only exact year match is considered correct
+        // This is because the UI is lacking month/day inputs currently
 
-        if (totalComponents > 0) {
-            score = correctComponents / totalComponents;
-        }
+        // Track how many of the components are correct
+        // let totalComponents = 0;
+        // let correctComponents = 0;
 
-        return { score };
+        // if (correctAnswer.year !== undefined && correctAnswer.year !== null) {
+        //     totalComponents++;
+        //     if (answer.year === correctAnswer.year) {
+        //         correctComponents++;
+        //     }
+        // }
+
+        // if (correctAnswer.month !== undefined && correctAnswer.month !== null) {
+        //     totalComponents++;
+        //     if (answer.month === correctAnswer.month) {
+        //         correctComponents++;
+        //     }
+        // }
+
+        // if (correctAnswer.day !== undefined && correctAnswer.day !== null) {
+        //     totalComponents++;
+        //     if (answer.day === correctAnswer.day) {
+        //         correctComponents++;
+        //     }
+        // }
+
+        // if (totalComponents > 0) {
+        //     score = correctComponents / totalComponents;
+        // }
+
+        // return { score };
 
     }
 
