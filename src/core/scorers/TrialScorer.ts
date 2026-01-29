@@ -51,6 +51,9 @@ export class TrialScorerFactory {
  * In this case, if a Trial has 1 Open Juice Test with score 80, and 2 Date Test with score 50 and 70, the final score will be:
  * (0.6 * 80) + (0.4 * (50 + 70) / 2) = 48 + 24 = 72
  * 
+ * IMPORTANT: 
+ * if a test type is not present in the given challenge (e.g. a challenge that only has a Open Test), normalize the weights.
+ * 
  * Parameters: 
  * - the weights of each type of test in the trials
  */
@@ -60,6 +63,15 @@ export class WeightedTestTypeTrialScorer extends TrialScorer {
 
         // 1. Get the weights
         const weights = this.config.testTypeWeights;
+
+        // 1.1. Make sure that weights sum to 1
+        const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
+        if (totalWeight !== 1) {
+            // Normalize weights
+            for (const key of Object.keys(weights)) {
+                weights[key] = weights[key] / totalWeight;
+            }
+        }
 
         // 2. Group scores by test type
         const scoresByType: {[testType: string]: number[]} = {};
