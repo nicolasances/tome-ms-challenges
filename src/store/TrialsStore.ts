@@ -1,4 +1,4 @@
-import { Db, ObjectId } from "mongodb";
+import { BulkWriteResult, Db, FindCursor, ObjectId } from "mongodb";
 import { ExecutionContext } from "toto-api-controller";
 import { ControllerConfig } from "../Config";
 import { TestAnswer, Trial } from "../model/Trial";
@@ -58,14 +58,28 @@ export class TrialsStore {
     }
 
     /**
+     * Bulk update of trials scores.
+     * @param trialScores 
+     */
+    async updateTrialsScores(trialScores: { trialId: string; score: number }[]): Promise<BulkWriteResult> {
+        const bulkOps = trialScores.map(ts => ({
+            updateOne: {
+                filter: { _id: new ObjectId(ts.trialId) },
+                update: { $set: { score: ts.score } }
+            }
+        }));
+
+        return await this.db.collection(this.trials).bulkWrite(bulkOps);
+    }
+
+    /**
      * Retrieves all trials
+     * This returns a cursor that can be iterated to get all trials.
      * @returns 
      */
-    async getTrials(): Promise<Trial[]> {
+    getTrials(): FindCursor<any> {
 
-        const docs = await this.db.collection(this.trials).find({}).toArray();
-
-        return docs.map(doc => Trial.fromMongoDoc(doc));
+        return this.db.collection(this.trials).find({});
     }
 
     /**
