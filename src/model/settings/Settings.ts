@@ -1,7 +1,7 @@
 import { TrialScorersConfiguration } from "../../core/scorers/TrialScorer";
 
 export class Settings {
-    
+
     trialScorerConfiguration: TrialScorersConfiguration;
 
     constructor({trialScorerConfiguration}: {trialScorerConfiguration: TrialScorersConfiguration}) {
@@ -10,7 +10,7 @@ export class Settings {
 
     static fromMongoDoc(doc: any): Settings {
         return new Settings({
-            trialScorerConfiguration: doc.trialScorerConfiguration,
+            trialScorerConfiguration: doc.trialScorerConfiguration || new TrialScorersConfiguration(),
         });
     }
 

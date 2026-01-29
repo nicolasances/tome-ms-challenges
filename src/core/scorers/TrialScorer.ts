@@ -1,3 +1,4 @@
+import { ValidationError } from "toto-api-controller";
 import { TomeChallenge } from "../../model/TomeChallenge";
 import { Trial } from "../../model/Trial";
 
@@ -5,6 +6,19 @@ export class TrialScorersConfiguration {
 
     chosenScorer: "weighted-test-type" | "full-fair" = "weighted-test-type";
     testTypeWeights: {[testType: string]: number} = {};
+
+    static fromHTTPBody(body: any): TrialScorersConfiguration {
+
+        const config = new TrialScorersConfiguration();
+
+        if (!body.chosenScorer) throw new ValidationError(400, "Missing mandatory field: chosenScorer");
+        if (!body.testTypeWeights) throw new ValidationError(400, "Missing mandatory field: testTypeWeights");
+        
+        config.chosenScorer = body.chosenScorer;
+        config.testTypeWeights = body.testTypeWeights;
+        
+        return config;
+    }
 
 }
 

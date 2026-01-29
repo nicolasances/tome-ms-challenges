@@ -2,6 +2,7 @@ import { ExecutionContext } from "toto-api-controller";
 import { ControllerConfig } from "../Config";
 import { Db } from "mongodb";
 import { TrialScorersConfiguration } from "../core/scorers/TrialScorer";
+import { Settings } from "../model/settings/Settings";
 
 export class SettingsStore {
 
@@ -14,9 +15,11 @@ export class SettingsStore {
     /**
      * Loads the settings document from the database.
      */
-    async loadSettings(): Promise<any> {
+    async loadSettings(): Promise<Settings> {
 
         const doc = await this.db.collection(this.settings).findOne({}) as any;
+
+        return Settings.fromMongoDoc(doc);
     }
 
     /**
