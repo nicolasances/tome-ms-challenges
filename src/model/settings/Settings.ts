@@ -9,6 +9,11 @@ export class Settings {
     }
 
     static fromMongoDoc(doc: any): Settings {
+
+        if (!doc) return new Settings({
+            trialScorerConfiguration: new TrialScorersConfiguration(),
+        });
+
         return new Settings({
             trialScorerConfiguration: doc.trialScorerConfiguration || new TrialScorersConfiguration(),
         });
