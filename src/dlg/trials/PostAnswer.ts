@@ -5,6 +5,8 @@ import { TomeTest } from "../../model/TomeTest";
 import { TestScorerFactory } from "../../core/Scoring";
 import { TrialsStore } from "../../store/TrialsStore";
 import { ChallengesStore } from "../../store/ChallengesStore";
+import { TrialScorerFactory } from "../../core/scorers/TrialScorer";
+import { SettingsStore } from "../../store/SettingsStore";
 
 /**
  * Post an Answer for a given test. 
@@ -52,13 +54,17 @@ export class PostAnswer implements TotoDelegate {
         const submittedAnswers = trial?.answers?.length || 0;
 
         // 4.3. If all tests have been answered, mark the trial as complete
-        let trialScore = null;
+        let trialScore: number | null = null;
+        
         if (submittedAnswers >= totalTests) {
 
-            // Sum scores
-            const summedScores = trial?.answers?.reduce((acc, curr) => acc + (curr.score || 0), 0) || 0;
+            // Get the Trial Scorer settings
+            const settings = await new SettingsStore(db, execContext).loadSettings();
 
-            trialScore = totalTests > 0 ? summedScores / totalTests : 0;
+            // Calculate the final trial score
+            const trialScorer = TrialScorerFactory.getScorer(settings.trialScorerConfiguration);
+
+            trialScore = await trialScorer.scoreTrial(trial, challenge!);
 
             // Save the score
             await new TrialsStore(db, execContext).markTrialAsCompleted(trialId, new Date(), trialScore);

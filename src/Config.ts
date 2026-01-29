@@ -5,6 +5,7 @@ const dbName = 'tomechallenges';
 const collections = {
     challenges: 'challenges',  // Collection for storing challenges
     trials: 'trials',          // Collection for storing trials, which are attempts at challenges
+    settings: 'settings'       // Collection for storing microservice settings
 };
 
 export class ControllerConfig extends TotoControllerConfig {
