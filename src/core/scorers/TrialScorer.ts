@@ -61,15 +61,18 @@ export class WeightedTestTypeTrialScorer extends TrialScorer {
 
     async scoreTrial(trial: Trial, challenge: TomeChallenge): Promise<number> {
 
-        // 1. Get the weights
-        const weights = this.config.testTypeWeights;
+        // 1. Get the weights (make a copy to avoid mutating the config)
+        const weights = {...this.config.testTypeWeights};
 
-        // 1.1. Make sure that weights sum to 1
-        const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
-        if (totalWeight !== 1) {
+        // 1.1. Make sure that the challenge has tests for all specified types, otherwise normalize weights
+        const totalWeightOfTestsInChallenge = Object.keys(weights)
+            .filter(testType => challenge.tests.some(t => t.type === testType))
+            .reduce((sum, testType) => sum + weights[testType], 0);
+
+        if (totalWeightOfTestsInChallenge !== 1) {
             // Normalize weights
             for (const key of Object.keys(weights)) {
-                weights[key] = weights[key] / totalWeight;
+                weights[key] = weights[key] / totalWeightOfTestsInChallenge;
             }
         }
 
