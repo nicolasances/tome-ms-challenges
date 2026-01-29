@@ -20,6 +20,20 @@ export class TrialScorersConfiguration {
         return config;
     }
 
+    toMongoDoc(): any {
+        return {
+            chosenScorer: this.chosenScorer,
+            testTypeWeights: this.testTypeWeights
+        };
+    }
+
+    toJSON(): any {
+        return {
+            chosenScorer: this.chosenScorer,
+            testTypeWeights: this.testTypeWeights
+        };
+    }
+
 }
 
 export abstract class TrialScorer {

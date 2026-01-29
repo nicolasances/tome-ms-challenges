@@ -33,9 +33,10 @@ export class SettingsStore {
             {},
             {
                 $set: {
-                    trialScorerConfiguration: newConfig
+                    trialScorerConfiguration: newConfig.toMongoDoc()
                 }
-            }
+            },
+            { upsert: true }
         );
     }
 
