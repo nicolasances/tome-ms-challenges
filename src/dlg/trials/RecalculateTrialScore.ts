@@ -5,6 +5,8 @@ import { TomeTest } from "../../model/TomeTest";
 import { TestScorerFactory } from "../../core/Scoring";
 import { TrialsStore } from "../../store/TrialsStore";
 import { ChallengesStore } from "../../store/ChallengesStore";
+import { TrialScorerFactory } from "../../core/scorers/TrialScorer";
+import { SettingsStore } from "../../store/SettingsStore";
 
 /**
  * Util to recalculate the score for a given test answer in a trial.
@@ -32,14 +34,13 @@ export class RecalculateTrialScore implements TotoDelegate {
         // 2.1. Check how many tests are in the challenge
         const challenge = await new ChallengesStore(db, execContext).getChallengeById(trial?.challengeId);
 
-        const totalTests = challenge?.tests.length || 0;
+        const settings = await new SettingsStore(db, execContext).loadSettings();
 
-        const summedScores = trial?.answers?.reduce((acc, curr) => acc + (curr.score || 0), 0) || 0;
-        const trialScore = totalTests > 0 ? summedScores / totalTests : 0;
+        const scorer = TrialScorerFactory.getScorer(settings.trialScorerConfiguration);
 
         // 4. Return the result 
         return {
-            trialScore: trialScore,
+            trialScore: await scorer.scoreTrial(trial, challenge!),
         }
     }
 
