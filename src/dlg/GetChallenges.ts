@@ -18,7 +18,7 @@ import { TrialsStore } from "../store/TrialsStore";
  * Among these Y trials there's going to be: 
  * - YA trials that are completed (have a completedOn date) AND are "attempts" (an attempt is basically a trial that has failed and needs to be retaken)
  * - YB = Max 1 trial that is completed AND not an attempt (successfullyCompletedTrials)
- * - YC trials that are not completed (no completedOn date)
+ * - YC trials that are not completed (no completedOn date) 
  * 
  * Status is determined as such:
  * - If YB = 1 then status = "completed"
@@ -39,7 +39,7 @@ export class GetChallenges implements TotoDelegate {
 
         const options = GetChallengesOptions.fromHTTPRequest(req);
 
-        const challenges = await new ChallengesStore(db, execContext).getChallenges();
+        const challenges = await new ChallengesStore(db, execContext).getChallenges(options);
 
         if (options.includeStatus) {
 
@@ -91,12 +91,14 @@ type Status = "not-started" | "in-progress" | "completed";
 
 export class GetChallengesOptions {
     includeStatus: boolean = false;
+    topicId?: string;
 
     static fromHTTPRequest(req: Request): GetChallengesOptions {
 
         const options = new GetChallengesOptions();
 
         if (req.query.includeStatus && req.query.includeStatus === "true") options.includeStatus = true;
+        if (req.query.topicId && typeof req.query.topicId === "string") options.topicId = req.query.topicId;
 
         return options;
     }
