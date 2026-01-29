@@ -211,4 +211,33 @@ export class TrialsStore {
             }
         );
     }
+
+    /**
+     * Finds the most recent trial marked as "attempt" for a given challenge
+     * and unmarks it (sets attempt to false)
+     * 
+     * @param challengeId 
+     */
+    async unmarkMostRecentAttempt(challengeId: string): Promise<void> {
+
+        const now = new Date();
+
+        // Find all non-expired trials marked as attempt for this challenge
+        const attemptTrials = await this.db.collection(this.trials).find({
+            challengeId: challengeId,
+            attempt: true,
+            expiresOn: { $gt: now }
+        })
+        .sort({ startedOn: -1 })
+        .limit(1)
+        .toArray();
+
+        // If there's at least one attempt trial, unmark the most recent one
+        if (attemptTrials.length > 0) {
+            await this.db.collection(this.trials).updateOne(
+                { _id: attemptTrials[0]._id },
+                { $set: { attempt: false } }
+            );
+        }
+    }
 }
