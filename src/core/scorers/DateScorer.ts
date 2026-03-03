@@ -9,8 +9,8 @@ export class DateScorer implements TestScorer<DateTest> {
         const correctAnswer = test.correctAnswer;
 
         if (correctAnswer.year !== undefined && correctAnswer.year !== null) {
-            if (answer.year === correctAnswer.year) {
-                return { score: 1  };
+            if (Math.abs(answer.year) === Math.abs(correctAnswer.year)) {
+                return { score: 1 };
             }
         }
 
