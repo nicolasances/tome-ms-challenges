@@ -56,9 +56,12 @@ export class ChallengesStore {
      * 
      * @returns all the challenges
      */
-    async getChallenges(): Promise<TomeChallenge[]> {
+    async getChallenges(options?: { topicId?: string }): Promise<TomeChallenge[]> {
 
-        const docs = await this.challenges.find({}).toArray() as any[];
+        const filter: any = {};
+        if (options?.topicId) filter.topicId = options.topicId;
+
+        const docs = await this.challenges.find(filter).toArray() as any[];
 
         return docs.map(doc => ChallengeFactory.fromMongoDoc(doc));
     }

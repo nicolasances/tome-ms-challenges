@@ -41,7 +41,7 @@ export class GetTrials implements TotoDelegate {
         }
 
         // Unfiltered
-        const trials = await new TrialsStore(db, execContext).getTrials();
+        const trials = await new TrialsStore(db, execContext).getTrials().toArray();
 
         return { trials: trials };
     }
