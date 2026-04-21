@@ -1,15 +1,13 @@
 import { BulkWriteResult, Db, FindCursor, ObjectId } from "mongodb";
-import { ExecutionContext } from "toto-api-controller";
 import { ControllerConfig } from "../Config";
 import { TestAnswer, Trial } from "../model/Trial";
-import { Options } from "../dlg/trials/GetTrials";
 
 export class TrialsStore {
 
     trials: string;
 
-    constructor(private db: Db, private execContext: ExecutionContext) {
-        this.trials = (execContext.config as ControllerConfig).getCollections().trials;
+    constructor(private db: Db, private config: ControllerConfig) {
+        this.trials = config.getCollections().trials;
     }
 
     /**

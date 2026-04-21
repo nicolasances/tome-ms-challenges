@@ -1,4 +1,4 @@
-import { TotoAPIController } from "toto-api-controller";
+import { TotoMicroservice, TotoMicroserviceConfiguration, SupportedHyperscalers, getHyperscalerConfiguration } from "totoms";
 import { ControllerConfig } from "./Config";
 import { PostChallenge } from "./dlg/PostChallenge";
 import { GetTopicChallenges } from "./dlg/GetTopicChallenges";
@@ -13,24 +13,35 @@ import { DeleteTrial } from "./dlg/trials/DeleteTrial";
 import { GetSettings } from "./dlg/settings/GetSettings";
 import { UpdateTrialScorerConfiguration } from "./dlg/settings/UpdateTrialScorerConfiguration";
 
-const api = new TotoAPIController(new ControllerConfig({ apiName: "tome-ms-challenges" }, {defaultHyperscaler: "aws", defaultSecretsManagerLocation: "aws"}), { basePath: '/tomechallenges' });
+const config: TotoMicroserviceConfiguration = {
+    serviceName: "tome-ms-challenges",
+    basePath: '/tomechallenges',
+    environment: {
+        hyperscaler: (process.env.HYPERSCALER as SupportedHyperscalers) || "aws",
+        hyperscalerConfiguration: getHyperscalerConfiguration()
+    },
+    customConfiguration: ControllerConfig,
+    apiConfiguration: {
+        apiEndpoints: [
+            { method: 'POST', path: '/challenges', delegate: PostChallenge },
+            { method: 'GET', path: '/challenges', delegate: GetChallenges },
+            { method: 'GET', path: '/challenges/:challengeId', delegate: GetChallenge },
 
-api.path('POST', '/challenges', new PostChallenge());
-api.path('GET', '/challenges', new GetChallenges());
-api.path('GET', '/challenges/:challengeId', new GetChallenge());
+            { method: 'GET', path: '/topics/:topicId/challenges', delegate: GetTopicChallenges },
 
-api.path('GET', '/topics/:topicId/challenges', new GetTopicChallenges());
+            { method: 'POST', path: '/trials', delegate: PostTrial },
+            { method: 'GET', path: '/trials', delegate: GetTrials },
+            { method: 'GET', path: '/trials/:trialId', delegate: GetTrial },
+            { method: 'DELETE', path: '/trials/:trialId', delegate: DeleteTrial },
+            { method: 'POST', path: '/trials/:trialId/answers', delegate: PostAnswer },
+            { method: 'GET', path: '/trials/:trialId/score', delegate: RecalculateTrialScore },
 
-api.path('POST', '/trials', new PostTrial());
-api.path('GET', '/trials', new GetTrials());
-api.path('GET', '/trials/:trialId', new GetTrial());
-api.path('DELETE', '/trials/:trialId', new DeleteTrial());
-api.path('POST', '/trials/:trialId/answers', new PostAnswer());
-api.path('GET', '/trials/:trialId/score', new RecalculateTrialScore());
+            { method: 'GET', path: '/settings', delegate: GetSettings },
+            { method: 'PUT', path: '/settings/scorers/trial', delegate: UpdateTrialScorerConfiguration },
+        ]
+    }
+};
 
-api.path('GET', '/settings', new GetSettings());
-api.path('PUT', '/settings/scorers/trial', new UpdateTrialScorerConfiguration());
-
-api.init().then(() => {
-    api.listen()
+TotoMicroservice.init(config).then((microservice: TotoMicroservice) => {
+    microservice.start();
 });

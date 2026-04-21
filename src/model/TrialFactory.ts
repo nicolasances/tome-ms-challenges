@@ -1,16 +1,17 @@
 import { Db } from "mongodb";
 import { Trial } from "./Trial";
-import { ExecutionContext, ValidationError } from "toto-api-controller";
+import { ValidationError } from "totoms";
 import { ChallengesStore } from "../store/ChallengesStore";
 import { ChallengeFactory } from "./TomeChallengeFactory";
+import { ControllerConfig } from "../Config";
 
 export class TrialFactory {
 
     challengesStore: ChallengesStore;
 
-    constructor(private db: Db, private execContext: ExecutionContext) {
+    constructor(private db: Db, private config: ControllerConfig) {
 
-        this.challengesStore = new ChallengesStore(db, execContext);
+        this.challengesStore = new ChallengesStore(db, config);
     }
 
     /**

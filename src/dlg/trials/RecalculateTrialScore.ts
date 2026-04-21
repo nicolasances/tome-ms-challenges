@@ -1,8 +1,6 @@
 import { Request } from "express";
-import { ExecutionContext, TotoDelegate, UserContext, ValidationError } from "toto-api-controller";
+import { TotoDelegate, TotoRequest, UserContext, ValidationError } from "totoms";
 import { ControllerConfig } from "../../Config";
-import { TomeTest } from "../../model/TomeTest";
-import { TestScorerFactory } from "../../core/Scoring";
 import { TrialsStore } from "../../store/TrialsStore";
 import { ChallengesStore } from "../../store/ChallengesStore";
 import { TrialScorerFactory } from "../../core/scorers/TrialScorer";
@@ -11,30 +9,26 @@ import { SettingsStore } from "../../store/SettingsStore";
 /**
  * Util to recalculate the score for a given test answer in a trial.
  */
-export class RecalculateTrialScore implements TotoDelegate {
+export class RecalculateTrialScore extends TotoDelegate<RecalculateTrialScoreRequest, RecalculateTrialScoreResponse> {
 
-    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<any> {
+    async do(req: RecalculateTrialScoreRequest, userContext?: UserContext): Promise<RecalculateTrialScoreResponse> {
 
-        const config = execContext.config as ControllerConfig;
-
-        const client = await config.getMongoClient();
-        const db = client.db(config.getDBName());
-
-        const trialId = req.params.trialId;
+        const config = this.config as ControllerConfig;
+        const db = await config.getMongoDb(config.getDBName());
 
         // 1. Validate input 
-        if (!trialId) throw new ValidationError(400, "Missing mandatory field: trialId");
+        if (!req.trialId) throw new ValidationError(400, "Missing mandatory field: trialId");
 
         // 2.2. Check how many answers have been submitted for this trial
-        const trial = await new TrialsStore(db, execContext).getTrialById(trialId);
+        const trial = await new TrialsStore(db, config).getTrialById(req.trialId);
 
-        if (!trial) throw new ValidationError(404, `Trial with id ${trialId} not found`);
+        if (!trial) throw new ValidationError(404, `Trial with id ${req.trialId} not found`);
 
         // 2. Check if the trial is now complete
         // 2.1. Check how many tests are in the challenge
-        const challenge = await new ChallengesStore(db, execContext).getChallengeById(trial?.challengeId);
+        const challenge = await new ChallengesStore(db, config).getChallengeById(trial?.challengeId);
 
-        const settings = await new SettingsStore(db, execContext).loadSettings();
+        const settings = await new SettingsStore(db, config).loadSettings();
 
         const scorer = TrialScorerFactory.getScorer(settings.trialScorerConfiguration);
 
@@ -44,4 +38,16 @@ export class RecalculateTrialScore implements TotoDelegate {
         }
     }
 
+    parseRequest(req: Request): RecalculateTrialScoreRequest {
+        return { trialId: req.params.trialId };
+    }
+
+}
+
+interface RecalculateTrialScoreRequest extends TotoRequest {
+    trialId: string;
+}
+
+interface RecalculateTrialScoreResponse {
+    trialScore: number;
 }

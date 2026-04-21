@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { ExecutionContext, TotoDelegate, UserContext } from "toto-api-controller";
+import { TotoDelegate, TotoRequest, UserContext } from "totoms";
 import { ControllerConfig } from "../../Config";
 import { TrialsStore } from "../../store/TrialsStore";
 import { Trial } from "../../model/Trial";
@@ -8,56 +8,55 @@ import { ChallengesStore } from "../../store/ChallengesStore";
 /**
  * Retrieves all trials
  */
-export class GetTrials implements TotoDelegate {
+export class GetTrials extends TotoDelegate<GetTrialsRequest, GetTrialsResponse> {
 
-    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<any> {
+    async do(req: GetTrialsRequest, userContext?: UserContext): Promise<GetTrialsResponse> {
 
-        const config = execContext.config as ControllerConfig;
-
-        const client = await config.getMongoClient();
-        const db = client.db(config.getDBName());
-
-        const options = Options.fromHTTPRequest(req);
+        const config = this.config as ControllerConfig;
+        const db = await config.getMongoDb(config.getDBName());
 
         // Filtering by topic and challenge code: will get all the trials for that challenge on that topic
-        if (options.topicId && options.challengeCode) {
+        if (req.topicId && req.challengeCode) {
 
-            const challenges = await new ChallengesStore(db, execContext).getChallengesOfTopic(options.topicId);
+            const challenges = await new ChallengesStore(db, config).getChallengesOfTopic(req.topicId);
 
-            const filteredChallenges = challenges.filter(challenge => challenge.code === options.challengeCode);
+            const filteredChallenges = challenges.filter(challenge => challenge.code === req.challengeCode);
 
-            const trials = await new TrialsStore(db, execContext).getNonExpiredTrialsOnChallenges(filteredChallenges.map(c => c.id!.toString()));
+            const trials = await new TrialsStore(db, config).getNonExpiredTrialsOnChallenges(filteredChallenges.map(c => c.id!.toString()));
 
-            return { trials: trials, message: `Non-Expired Trials for challenge ${options.challengeCode} on topic ${options.topicId}` };
+            return { trials: trials, message: `Non-Expired Trials for challenge ${req.challengeCode} on topic ${req.topicId}` };
         }
-        else if (options.topicId && !options.challengeCode) {
+        else if (req.topicId && !req.challengeCode) {
 
-            const challenges = await new ChallengesStore(db, execContext).getChallengesOfTopic(options.topicId);
+            const challenges = await new ChallengesStore(db, config).getChallengesOfTopic(req.topicId);
 
-            const trials = await new TrialsStore(db, execContext).getNonExpiredTrialsOnChallenges(challenges.map(c => c.id!.toString()));
+            const trials = await new TrialsStore(db, config).getNonExpiredTrialsOnChallenges(challenges.map(c => c.id!.toString()));
 
-            return { trials: trials, message: `Non-Expired Trials on topic ${options.topicId}` };
+            return { trials: trials, message: `Non-Expired Trials on topic ${req.topicId}` };
 
         }
 
         // Unfiltered
-        const trials = await new TrialsStore(db, execContext).getTrials().toArray();
+        const trials = await new TrialsStore(db, config).getTrials().toArray();
 
         return { trials: trials };
     }
 
-}
-
-export class Options {
-
-    topicId: string | null = null;
-    challengeCode: string | null = null;
-
-    static fromHTTPRequest(req: Request): Options {
-        const options = new Options();
-        if (req.query.challengeCode) options.challengeCode = String(req.query.challengeCode);
-        if (req.query.topicId) options.topicId = String(req.query.topicId);
-        return options;
+    parseRequest(req: Request): GetTrialsRequest {
+        return {
+            challengeCode: req.query.challengeCode ? String(req.query.challengeCode) : null,
+            topicId: req.query.topicId ? String(req.query.topicId) : null
+        };
     }
 
+}
+
+interface GetTrialsRequest extends TotoRequest {
+    topicId: string | null;
+    challengeCode: string | null;
+}
+
+interface GetTrialsResponse {
+    trials: Trial[];
+    message?: string;
 }

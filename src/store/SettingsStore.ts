@@ -1,4 +1,3 @@
-import { ExecutionContext } from "toto-api-controller";
 import { ControllerConfig } from "../Config";
 import { Db } from "mongodb";
 import { TrialScorersConfiguration } from "../core/scorers/TrialScorer";
@@ -8,8 +7,8 @@ export class SettingsStore {
 
     settings: any;
 
-    constructor(private db: Db, private execContext: ExecutionContext) {
-        this.settings = (execContext.config as ControllerConfig).getCollections().settings;
+    constructor(private db: Db, private config: ControllerConfig) {
+        this.settings = config.getCollections().settings;
     }
 
     /**

@@ -1,4 +1,4 @@
-import { TotoRuntimeError, ValidationError } from "toto-api-controller";
+import { TotoRuntimeError, ValidationError } from "totoms";
 import { TomeChallenge } from "./TomeChallenge";
 import { JuiceChallenge } from "./challenges/JuiceChallenge";
 
