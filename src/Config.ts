@@ -20,7 +20,7 @@ export class ControllerConfig extends TotoControllerConfig {
 
         let promises = [];
 
-        const sm = new SecretsManager(this.hyperscaler == 'local' ? 'aws' : this.hyperscaler, this.env, this.logger!);
+        const sm = new SecretsManager(this.hyperscaler == 'local' ? 'gcp' : this.hyperscaler, this.env, this.logger!);
 
         promises.push(super.load());
 

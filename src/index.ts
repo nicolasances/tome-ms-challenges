@@ -13,7 +13,7 @@ import { DeleteTrial } from "./dlg/trials/DeleteTrial";
 import { GetSettings } from "./dlg/settings/GetSettings";
 import { UpdateTrialScorerConfiguration } from "./dlg/settings/UpdateTrialScorerConfiguration";
 
-const api = new TotoAPIController(new ControllerConfig({ apiName: "tome-ms-challenges" }, {defaultHyperscaler: "aws", defaultSecretsManagerLocation: "aws"}), { basePath: '/tomechallenges' });
+const api = new TotoAPIController(new ControllerConfig({ apiName: "tome-ms-challenges" }, {defaultHyperscaler: "gcp", defaultSecretsManagerLocation: "gcp"}), { basePath: '/tomechallenges' });
 
 api.path('POST', '/challenges', new PostChallenge());
 api.path('GET', '/challenges', new GetChallenges());
