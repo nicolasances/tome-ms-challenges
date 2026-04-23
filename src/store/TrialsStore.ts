@@ -124,7 +124,7 @@ export class TrialsStore {
             await this.db.collection(this.trials).updateOne(
                 { _id: new ObjectId(trialId) },
                 {
-                    $push: { answers: testAnswer }
+                    $push: { answers: testAnswer as any }
                 }
             );
         }
