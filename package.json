@@ -28,7 +28,7 @@
     "path": "^0.12.7",
     "request": "^2.88.2",
     "totoms": "^2.4.0",
-    "uuid": "^13.0.0"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/chai": "^5.2.2",
@@ -38,6 +38,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mocha": "^10.0.10",
     "@types/node": "^16.11.7",
+    "@types/uuid": "^11.0.0",
     "chai": "^4.x",
     "mocha": "^11.7.1",
     "nodemon": "^3.0.1",
