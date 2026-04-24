@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { ExecutionContext, TotoDelegate, UserContext } from "toto-api-controller";
+import { TotoDelegate, TotoRequest, UserContext } from "totoms";
 import { ControllerConfig } from "../../Config";
 import { TrialsStore } from "../../store/TrialsStore";
 import { Trial } from "../../model/Trial";
@@ -7,21 +7,27 @@ import { Trial } from "../../model/Trial";
 /**
  * Retrieves the trial by Id 
  */
-export class GetTrial implements TotoDelegate {
+export class GetTrial extends TotoDelegate<GetTrialRequest, GetTrialResponse> {
 
-    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<any> {
+    async do(req: GetTrialRequest, userContext?: UserContext): Promise<GetTrialResponse> {
 
-        const config = execContext.config as ControllerConfig;
+        const config = this.config as ControllerConfig;
+        const db = await config.getMongoDb(config.getDBName());
 
-        const client = await config.getMongoClient();
-        const db = client.db(config.getDBName());
-
-        const trial = await new TrialsStore(db, execContext).getTrialById(req.params.trialId);
+        const trial = await new TrialsStore(db, config).getTrialById(req.trialId);
 
         return { trial: trial! };
 
     }
 
+    parseRequest(req: Request): GetTrialRequest {
+        return { trialId: req.params.trialId };
+    }
+
+}
+
+interface GetTrialRequest extends TotoRequest {
+    trialId: string;
 }
 
 interface GetTrialResponse {

@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { ExecutionContext, TotoDelegate, UserContext, ValidationError } from "toto-api-controller";
+import { TotoDelegate, TotoRequest, UserContext } from "totoms";
 import { ControllerConfig } from "../Config";
 import { ChallengesStore } from "../store/ChallengesStore";
 import { ChallengeFactory } from "../model/TomeChallengeFactory";
@@ -9,20 +9,28 @@ import { ChallengeFactory } from "../model/TomeChallengeFactory";
  * 
  * If there is already a Challenge of the same type for the given Topic, it is replaced.
  */
-export class PostChallenge implements TotoDelegate {
+export class PostChallenge extends TotoDelegate<PostChallengeRequest, PostChallengeResponse> {
 
-    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<any> {
+    async do(req: PostChallengeRequest, userContext?: UserContext): Promise<PostChallengeResponse> {
 
-        const config = execContext.config as ControllerConfig;
+        const config = this.config as ControllerConfig;
+        const db = await config.getMongoDb(config.getDBName());
 
-        const client = await config.getMongoClient();
-        const db = client.db(config.getDBName());
-
-        const challenge = ChallengeFactory.fromHTTPBody(req.body);
-
-        await new ChallengesStore(db, execContext).saveChallenge(challenge);
+        await new ChallengesStore(db, config).saveChallenge(req.challenge);
 
         return { message: 'Challenge saved successfully' };
     }
 
+    parseRequest(req: Request): PostChallengeRequest {
+        return { challenge: ChallengeFactory.fromHTTPBody(req.body) };
+    }
+
+}
+
+interface PostChallengeRequest extends TotoRequest {
+    challenge: any;
+}
+
+interface PostChallengeResponse {
+    message: string;
 }

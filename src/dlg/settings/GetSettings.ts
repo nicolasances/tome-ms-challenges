@@ -1,20 +1,29 @@
 import { Request } from "express";
-import { ExecutionContext, TotoDelegate, UserContext } from "toto-api-controller";
+import { TotoDelegate, TotoRequest, UserContext } from "totoms";
 import { ControllerConfig } from "../../Config";
 import { SettingsStore } from "../../store/SettingsStore";
 import { Settings } from "../../model/settings/Settings";
 
-export class GetSettings implements TotoDelegate {
+export class GetSettings extends TotoDelegate<GetSettingsRequest, GetSettingsResponse> {
 
-    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<{settings: Settings}> {
+    async do(req: GetSettingsRequest, userContext?: UserContext): Promise<GetSettingsResponse> {
 
-        const config = execContext.config as ControllerConfig;
+        const config = this.config as ControllerConfig;
+        const db = await config.getMongoDb(config.getDBName());
 
-        const client = await config.getMongoClient();
-        const db = client.db(config.getDBName());
-
-        const settings = await new SettingsStore(db, execContext).loadSettings();
+        const settings = await new SettingsStore(db, config).loadSettings();
 
         return { settings: settings };
     }
+
+    parseRequest(req: Request): GetSettingsRequest {
+        return {};
+    }
+
+}
+
+interface GetSettingsRequest extends TotoRequest {}
+
+interface GetSettingsResponse {
+    settings: Settings;
 }

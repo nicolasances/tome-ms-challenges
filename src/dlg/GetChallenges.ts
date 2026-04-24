@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { ExecutionContext, TotoDelegate, UserContext } from "toto-api-controller";
+import { TotoDelegate, TotoRequest, UserContext } from "totoms";
 import { ControllerConfig } from "../Config";
 import { ChallengesStore } from "../store/ChallengesStore";
 import { TomeChallenge } from "../model/TomeChallenge";
@@ -28,23 +28,19 @@ import { TrialsStore } from "../store/TrialsStore";
  * 2. Get all General Challenges (not yet implemented).
  * 
  */
-export class GetChallenges implements TotoDelegate {
+export class GetChallenges extends TotoDelegate<GetChallengesRequest, GetTopicChallengesResponse> {
 
-    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<GetTopicChallengesResponse> {
+    async do(req: GetChallengesRequest, userContext?: UserContext): Promise<GetTopicChallengesResponse> {
 
-        const config = execContext.config as ControllerConfig;
+        const config = this.config as ControllerConfig;
+        const db = await config.getMongoDb(config.getDBName());
 
-        const client = await config.getMongoClient();
-        const db = client.db(config.getDBName());
+        const challenges = await new ChallengesStore(db, config).getChallenges(req.options);
 
-        const options = GetChallengesOptions.fromHTTPRequest(req);
-
-        const challenges = await new ChallengesStore(db, execContext).getChallenges(options);
-
-        if (options.includeStatus) {
+        if (req.options.includeStatus) {
 
             // 1. Retrieve the user's non-expired trials for these challenges
-            const trials = await new TrialsStore(db, execContext).getNonExpiredTrialsOnChallenges(challenges.map(c => c.id!));
+            const trials = await new TrialsStore(db, config).getNonExpiredTrialsOnChallenges(challenges.map(c => c.id!));
 
             // 2. Map challenges to ExtendedChallenge with status
             const extendedChallenges: ExtendedChallenge[] = challenges.map(challenge => {
@@ -76,6 +72,14 @@ export class GetChallenges implements TotoDelegate {
         return { challenges: challenges };
     }
 
+    parseRequest(req: Request): GetChallengesRequest {
+        return { options: GetChallengesOptions.fromHTTPRequest(req) };
+    }
+
+}
+
+interface GetChallengesRequest extends TotoRequest {
+    options: GetChallengesOptions;
 }
 
 export interface GetTopicChallengesResponse {

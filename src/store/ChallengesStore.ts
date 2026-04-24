@@ -1,13 +1,14 @@
 import { Db, ObjectId } from "mongodb";
-import { ExecutionContext, TotoRuntimeError } from "toto-api-controller";
+import { ControllerConfig } from "../Config";
 import { SectionChallenge, TomeChallenge, TopicChallenge } from "../model/TomeChallenge";
 import { ChallengeFactory } from "../model/TomeChallengeFactory";
+import { TotoRuntimeError } from "totoms";
 
 export class ChallengesStore {
 
     challenges: any;
 
-    constructor(private db: Db, private execContext: ExecutionContext) {
+    constructor(private db: Db, private config: ControllerConfig) {
         this.challenges = this.db.collection('challenges');
     }
 

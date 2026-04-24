@@ -1,8 +1,7 @@
 import { Request } from "express";
-import { ExecutionContext, TotoDelegate, UserContext, ValidationError } from "toto-api-controller";
+import { TotoDelegate, TotoRequest, UserContext, ValidationError } from "totoms";
 import { ControllerConfig } from "../../Config";
 import { TrialsStore } from "../../store/TrialsStore";
-import { TrialFactory } from "../../model/TrialFactory";
 
 /**
  * Deletes a trial.
@@ -10,25 +9,21 @@ import { TrialFactory } from "../../model/TrialFactory";
  * If the deleted trial was the "current" trial (not marked as attempt), 
  * it will unmark the most recent "attempt" trial to maintain data consistency.
  */
-export class DeleteTrial implements TotoDelegate {
+export class DeleteTrial extends TotoDelegate<DeleteTrialRequest, DeleteTrialResponse> {
 
-    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<any> {
+    async do(req: DeleteTrialRequest, userContext?: UserContext): Promise<DeleteTrialResponse> {
 
-        const config = execContext.config as ControllerConfig;
-
-        const client = await config.getMongoClient();
-        const db = client.db(config.getDBName());
-        const trialsStore = new TrialsStore(db, execContext);
-
-        const trialId = req.params.trialId;
+        const config = this.config as ControllerConfig;
+        const db = await config.getMongoDb(config.getDBName());
+        const trialsStore = new TrialsStore(db, config);
 
         // Get the trial before deleting to check if we need to unmark previous attempts
-        const trial = await trialsStore.getTrialById(trialId);
+        const trial = await trialsStore.getTrialById(req.trialId);
 
         if (!trial) throw new ValidationError(400, "Trial not found");
 
         // Delete the trial
-        await trialsStore.deleteTrial(trialId);
+        await trialsStore.deleteTrial(req.trialId);
 
         // If the deleted trial was NOT marked as attempt, it means it was the "current" trial
         // In that case, we need to unmark the most recent attempt to restore consistency
@@ -36,7 +31,19 @@ export class DeleteTrial implements TotoDelegate {
             await trialsStore.unmarkMostRecentAttempt(trial.challengeId);
         }
 
-        return { id: trialId };
+        return { id: req.trialId };
     }
 
+    parseRequest(req: Request): DeleteTrialRequest {
+        return { trialId: req.params.trialId };
+    }
+
+}
+
+interface DeleteTrialRequest extends TotoRequest {
+    trialId: string;
+}
+
+interface DeleteTrialResponse {
+    id: string;
 }

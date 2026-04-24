@@ -1,4 +1,4 @@
-import { TotoAPI, TotoAPIRequest, ValidationError } from "toto-api-controller"
+import { TotoAPI, TotoAPIRequest, ValidationError } from "totoms"
 import { v4 as uuidv4 } from 'uuid';
 
 export class GaleBrokerAPI extends TotoAPI {

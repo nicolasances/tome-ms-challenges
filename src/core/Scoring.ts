@@ -1,8 +1,9 @@
-import { TotoRuntimeError } from "toto-api-controller";
+import { TotoRuntimeError } from "totoms";
 import { TomeChallenge } from "../model/TomeChallenge";
 import { TomeTest } from "../model/TomeTest";
 import { JuiceQuestionScorer } from "./scorers/JuiceQuestionScorer";
 import { DateScorer } from "./scorers/DateScorer";
+import { ControllerConfig } from "../Config";
 
 export interface TestScorer<T extends TomeTest> {
 
@@ -27,11 +28,11 @@ export interface ScoreResult {
  */
 export class TestScorerFactory {
 
-    static getScorerForTest(test: TomeTest, execContext: any): TestScorer<TomeTest> {
+    static getScorerForTest(test: TomeTest, config: ControllerConfig, cid?: string): TestScorer<TomeTest> {
 
         switch (test.type) {
             case 'open':
-                return new JuiceQuestionScorer(execContext) as TestScorer<TomeTest>;
+                return new JuiceQuestionScorer(config, cid) as TestScorer<TomeTest>;
             case 'date':
                 return new DateScorer() as TestScorer<TomeTest>;
             default:

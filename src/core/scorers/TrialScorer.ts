@@ -1,4 +1,4 @@
-import { ValidationError } from "toto-api-controller";
+import { ValidationError } from "totoms";
 import { TomeChallenge } from "../../model/TomeChallenge";
 import { Trial } from "../../model/Trial";
 
