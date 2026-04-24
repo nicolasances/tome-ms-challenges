@@ -1,6 +1,11 @@
 # Tome Challenges
 
-This microservice provides APIs to manage Tome Challenges.
+A microservice for managing learning challenges and trials in the Tome knowledge retention platform. Implements spaced repetition through time-expiring trials, with configurable scoring for different test types.
+
+## Documentation
+
+- [API Reference](docs/API.md) - REST API endpoints documentation
+- [Microservice Architecture](docs/MICROSERVICE.md) - Core concepts, scoring system, and data flow
 
 ## The Structure of Challenges
 Tome Challenges can be on different levels: 
@@ -32,4 +37,3 @@ Therefore, Trials' results are designed to **expire** after a certain time perio
 Each Challenge is different, therefore each Challenge can define its own **Trial Expiry Period**. <br>
 After that period, the Trial is considered **expired** and the user needs to re-attempt the Challenge to re-validate their knowledge. <br>
 This allows Tome to implement **spaced repetition** techniques to maximize long-term retention of knowledge.
-
