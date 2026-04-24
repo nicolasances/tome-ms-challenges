@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { describe, it } from "mocha";
 import { TrialFactory } from "../src/model/TrialFactory";
 import { JuiceChallenge } from "../src/model/challenges/JuiceChallenge";
 

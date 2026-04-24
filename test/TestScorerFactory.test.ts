@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { describe, it } from "mocha";
 import { TestScorerFactory } from "../src/core/Scoring";
 import { JuiceQuestionScorer } from "../src/core/scorers/JuiceQuestionScorer";
 import { DateScorer } from "../src/core/scorers/DateScorer";

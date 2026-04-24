@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ChallengeFactory } from "../src/model/TomeChallengeFactory";
 import { JuiceChallenge } from "../src/model/challenges/JuiceChallenge";
+import { describe, it } from "mocha";
 
 describe("ChallengeFactory", () => {
 

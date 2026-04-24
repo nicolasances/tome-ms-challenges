@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { describe, it } from "mocha";
 import { WeightedTestTypeTrialScorer, TrialScorersConfiguration, TrialScorerFactory } from "../src/core/scorers/TrialScorer";
 import { TomeChallenge } from "../src/model/TomeChallenge";
 import { TomeTest } from "../src/model/TomeTest";
